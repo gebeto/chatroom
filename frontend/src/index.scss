@@ -1,0 +1,326 @@
+@mixin respond($breakpoint) {
+    @if $breakpoint == phone {
+        @media only screen and (max-width: 37.5em) { @content }  //600px
+    }
+    @if $breakpoint == tablet-portrait {
+        @media only screen and (max-width: 56.25em) { @content }  //900px 
+    }
+    @if $breakpoint == tablet-landscape {
+        @media only screen and (max-width: 75em) { @content } // 1200px
+    }
+    @if $breakpoint == big-desktop {
+        @media only screen and (min-width: 112.5em) { @content } // 1800px
+    }
+}
+
+
+
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700&display=swap');
+
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+
+html {
+    font-size: 62.5%;
+    font-family: 'Lato', sans-serif;
+    box-sizing: border-box;
+    
+    
+    @include respond(tablet-portrait) {
+        font-size: 50%;
+    }
+    
+    @include respond(phone) {
+        font-size: 45%;
+    }
+}
+
+$grid-gap: .3rem;
+$chat-textarea-height: 8rem;
+$chat-container-width: 40rem;
+$chat-emotebutton-size: 3rem;
+$chat-container-height: 50rem;
+$chat-form-padding-top: 1rem;
+$emote-list-rowgap: $grid-gap;
+$emote-list-columngap: $grid-gap;
+$chat-textarea-width: $chat-container-width * .95;
+$emote-list-height: 20rem;
+$emote-list-width: $chat-textarea-width - 10rem;
+$emote-list-yPos: #{-$emote-list-height - $chat-form-padding-top};
+$emote-list-xPos: #{-($chat-textarea-width -$emote-list-width) / 2};
+$emote-item-maxwidth: 41px;
+$emote-item-maxheight: 32px;
+
+$scrollbar-width: .75rem;
+
+$color-primary: #6699FF;
+$color-secondary: #9966FF;
+$color-chatbox-background: #FFF;
+$color-message-username: $color-primary;
+$color-message-username-admin: $color-secondary;
+$color-message-hightlight: #FF6666;
+$color-message-alternate: #DDD;
+$color-emote-list: $color-chatbox-background;
+// #19161B dark mode background-color
+$color-text: #1A2A3A;
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(50deg, $color-primary, $color-secondary);;
+}
+
+.chat {
+    &-container {
+        display: flex;
+        //I wanted a use case for column-reverse
+        flex-direction: column-reverse;
+        background-color: $color-chatbox-background;
+        border-radius: .1rem;
+        box-shadow: .5rem .5rem 1rem rgba(0,0,0,.5);
+        height: $chat-container-height;
+        width: $chat-container-width;
+        overflow: hidden;
+        
+        @include respond(tablet-portrait) {
+            height: 75vh;
+            width: 60vw;
+        }
+        
+        @include respond(phone) {
+            height: 100vh;
+            width: 100vw;
+        }
+    }
+    
+    // Container for form/textarea/buttons
+    &-actions {
+        margin-bottom: 1rem;
+        
+        @include respond(tablet-portrait) {
+            margin-bottom: 1px;
+        }
+    }
+    
+    &-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: $chat-form-padding-top;
+        position: relative;
+        
+        @include respond(tablet-portrait) {
+            padding-top: 0;
+        }
+    }
+    
+    &-textarea {
+        background-color: transparent;
+        border-radius: .4rem;
+        font-family: 'Lato', sans-serif;
+        font-size: 1.5rem;
+        
+        height: $chat-textarea-height;
+        width: $chat-textarea-width;
+        
+        outline: none;
+        padding: .5rem 1rem;
+        padding-right: $chat-emotebutton-size + $scrollbar-width + 1rem;
+        resize: none;
+        
+        @include respond(tablet-portrait) {
+            border: none;
+            border-top: .1rem solid $color-primary;
+            border-radius: 0;
+            font-size: 2rem;
+            height: $chat-emotebutton-size + 2.8rem;
+            padding-right: $chat-emotebutton-size + $scrollbar-width + 8rem;
+            width: 100%;
+        }
+        
+    }
+    
+    &-emotelist {
+        display: grid;
+        grid-auto-rows: $emote-item-maxheight;
+        grid-template-columns: repeat(auto-fill, minmax(min-content, $emote-item-maxwidth));
+        grid-column-gap: $emote-list-columngap;
+        grid-row-gap: $emote-list-rowgap;
+        justify-content: center;
+        
+        background: $color-emote-list;
+        height: $emote-list-height;
+        width: $emote-list-width;
+        padding: 1.5rem .5rem;
+        
+        position: absolute;
+        transform: translate( $emote-list-xPos, $emote-list-yPos ) scaleY(0);
+        overflow-y: scroll;
+        user-select: none;
+        
+        
+        @include respond(tablet-portrait) {
+            box-shadow: 2px 2px 1rem rgba(black, .4);
+            grid-row-gap: 2rem;
+            grid-template-columns: repeat(6, minmax(min-content, $emote-item-maxwidth));
+            padding: 0;
+            width: 100%;
+            height: 30rem;
+        }
+        
+        @include respond(phone) {
+            grid-column-gap: .5rem;
+            height: 40vh;
+        }
+        
+        &--active {
+            transform: translate( $emote-list-xPos, $emote-list-yPos ) scaleY(1);
+
+            @include respond(tablet-portrait) {
+                position: initial;
+                transform: initial;
+            }
+        }
+    }
+    
+    &-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        
+        padding: 0 1rem;
+        width: 100%;
+        
+        @include respond(tablet-portrait) {
+            display: inline-flex;
+            align-items: center;
+            
+            position: absolute;
+            right: $scrollbar-width;
+            top: 0;
+            
+            padding: 0;
+            //Same height as text area
+            height: $chat-emotebutton-size + 2rem;
+            width: initial;
+        }
+    }
+    
+    &-button {
+        transition: color .2s ease;
+        
+        &--emote {
+            font-size: $chat-emotebutton-size;
+            position: absolute;
+            right: $chat-emotebutton-size;
+            top: $chat-form-padding-top + .5rem;
+            user-select: none;
+            &:hover {
+                color: $color-primary;
+                cursor: pointer;    
+            }
+            
+            @include respond(tablet-portrait) {
+                position: initial;
+            }
+        }
+        
+        &--submit {
+            background: #fff;
+            border: .2rem solid $color-primary;
+            border-radius: .4rem;
+            color: $color-primary;
+            font-size: 2rem;
+            letter-spacing: .2rem;
+            margin-top: 1rem;
+            outline: none;
+            padding: .8rem 1rem;
+            user-select: none;
+            &:hover {
+                background-color: $color-primary;
+                color:  $color-chatbox-background;
+                cursor: pointer;
+            }
+            
+            @include respond(tablet-portrait) {
+                background: none;
+                border: none;
+                height: 100%;
+                margin-left: 1rem;
+                margin-top: 0;
+                padding: .5rem;
+            }
+        }
+    }
+}
+
+//This styles each emote in the emote list dropdown(up) menu
+.emote-item {
+    justify-self: center;
+    list-style: none;
+    margin: 0 .5rem;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.messages {
+    overflow-y: scroll;
+    word-wrap: break-word;
+}
+
+.message {
+    font-size: 1.5rem;
+    padding: .6rem 1rem 1rem;
+    &:nth-of-type(2n) {
+        background-color: $color-message-alternate;
+    }
+    
+    &-username {
+        color: $color-message-username;
+        font-weight: 700;
+        margin: 0 .3rem 1rem 0;
+        &--admin {
+            color: $color-message-username-admin;
+        }
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    
+    &-text {
+        color: $color-text;
+    }
+}
+
+::selection {
+    background-color: $color-message-hightlight;
+}
+
+.scroll-style::-webkit-scrollbar-track {
+    background-color: transparent;
+	-webkit-box-shadow: inset 0 0 .6rem rgba(0, 0, 0, 0.3);
+}
+
+.scroll-style::-webkit-scrollbar {
+    background-color: transparent;
+	width: $scrollbar-width;
+}
+
+.scroll-style::-webkit-scrollbar-thumb {
+	background-color: $color-primary;
+	-webkit-box-shadow: inset 0 0 .6rem rgba(0, 0, 0, .3);
+}
+
+.scroll-style {
+    scrollbar-color: $color-primary transparent;
+    scrollbar-width: thin;
+}

@@ -1,0 +1,17 @@
+{
+  "name": "chatroom",
+  "version": 2,
+  "alias": ["chatroom"],
+  "public": true,
+  "builds": [
+    { "src": "backend/index.js", "use": "@now/node" },
+    { "src": "frontend/dist/**", "use": "@now/static" },
+    { "src": "frontend/index.html", "use": "@now/static" }
+  ],
+  "routes": [
+    { "src": "/static/(.*)", "dest": "frontend/dist/$1" },
+    { "src": "/", "dest": "frontend/index.html" },
+
+  	{ "src": "/messages", "dest": "backend/index.js" }
+  ]
+}
