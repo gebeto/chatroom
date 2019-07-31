@@ -1,26 +1,14 @@
-// const express = require('express');
-// const bodyParser = require('body-parser');
+const express = require('express');
+const bodyParser = require('body-parser');
 
-// const app = express();
-// const port = process.env.PORT || 5000;
+const app = express();
+const port = process.env.PORT || 5000;
 
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use('/static', express.static('static'))
-
-
-// app.get('/', (req, res) => {
-// 	res.send(`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><title>ChatRoom</title></head><body><script src="/static/main.js"></script></body></html>`);
-// });
-
-// app.get('/api/', (req, res) => {
-// 	res.send({
-// 		express: 'Hello From Express'
-// 	});
-// });
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/static', express.static('static'));
 
 
-// app.listen(port, () => console.log(`Listening on port ${port}`));
 function createIdentifier(start) {
 	let index = start || 0;
 	return function identify(item) {
@@ -30,7 +18,6 @@ function createIdentifier(start) {
 }
 
 const identifyMessage = createIdentifier();
-
 const messages = [
 	{
 		text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
@@ -79,19 +66,60 @@ const messages = [
 ];
 messages.forEach(identifyMessage);
 
-let counter = 1;
 
-module.exports = (req, res) => {
-	if (req.query.author && req.query.text) {
-		const message = identifyMessage(req.query);
-		messages.push(message);
-		res.json(message);
-		res.end();
-		return;
-	}
+app.get('/', (req, res) => {
+	res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<title>Chatroom</title>
+	<link rel="stylesheet" href="/static/main.css">
+</head>
+<body>
+	<script src="/static/main.js"></script>
+</body>
+</html>
+`);
+});
+
+app.get('/api/getMessages', (req, res) => {
 	res.send({
-		response: `Hi ${counter++}!`,
 		messages: messages,
 	});
-	res.end();
-}
+});
+
+app.get('/api/sendMessage', (req, res) => {
+	if (!req.query.author || !req.query.text) {
+		return res.json({
+			error: true
+		});
+	}
+
+	const message = identifyMessage(req.query);
+	messages.push(message);
+	return res.json(message);
+});
+
+
+app.listen(port, () => console.log(`Listening on port ${port}`));
+
+module.exports = app;
+
+
+// let counter = 1;
+
+// module.exports = (req, res) => {
+// 	if (req.query.author && req.query.text) {
+// 		const message = identifyMessage(req.query);
+// 		messages.push(message);
+// 		res.json(message);
+// 		res.end();
+// 		return;
+// 	}
+// 	res.send({
+// 		response: `Hi ${counter++}!`,
+// 		messages: messages,
+// 	});
+// 	res.end();
+// }

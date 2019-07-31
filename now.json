@@ -10,8 +10,9 @@
   ],
   "routes": [
     { "src": "/static/(.*)", "dest": "frontend/dist/$1" },
-    { "src": "/", "dest": "frontend/index.html" },
 
+    { "src": "/", "dest": "backend/index.js" },
+    { "src": "/api/(.*)", "dest": "backend/index.js" },
   	{ "src": "/messages", "dest": "backend/index.js" }
   ]
 }

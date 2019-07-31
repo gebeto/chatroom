@@ -27,8 +27,8 @@ const baseConfig = (env) => ({
 			{
 				test: /\.s?css$/,
 				use: [
-					// 'style-loader',
-					MiniCssExtractPlugin.loader,
+					'style-loader',
+					// MiniCssExtractPlugin.loader,
 					'css-loader',
 					'sass-loader'
 				]
