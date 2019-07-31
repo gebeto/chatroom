@@ -4,9 +4,12 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 5000;
 
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/static', express.static('static'));
+app.use('/static', express.static('../frontend/dist'));
 
 
 function createIdentifier(start) {
@@ -83,6 +86,14 @@ app.get('/', (req, res) => {
 `);
 });
 
+io.on('connection', function (socket) {
+	console.log('SOCKET CONNNNECTED!!!!!');
+	socket.emit('news', { hello: 'world' });
+	socket.on('my other event', function (data) {
+		console.log(data);
+	});
+});
+
 app.get('/api/getMessages', (req, res) => {
 	res.send({
 		messages: messages,
@@ -105,21 +116,3 @@ app.get('/api/sendMessage', (req, res) => {
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
 module.exports = app;
-
-
-// let counter = 1;
-
-// module.exports = (req, res) => {
-// 	if (req.query.author && req.query.text) {
-// 		const message = identifyMessage(req.query);
-// 		messages.push(message);
-// 		res.json(message);
-// 		res.end();
-// 		return;
-// 	}
-// 	res.send({
-// 		response: `Hi ${counter++}!`,
-// 		messages: messages,
-// 	});
-// 	res.end();
-// }

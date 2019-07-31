@@ -13,6 +13,8 @@ import MessageForm from './components/MessageForm';
 
 import './index.scss';
 
+import io from 'socket.io-client';
+
 
 class App extends React.Component<any, any> {
 	container: HTMLElement = null;
@@ -30,6 +32,12 @@ class App extends React.Component<any, any> {
 				...state,
 				...json,
 			}), this.updateScroll);
+		});
+
+		var socket = io('http://localhost:444');
+		socket.on('news', function (data) {
+			console.log(data);
+			socket.emit('my other event', { my: 'data' });
 		});
 	}
 
